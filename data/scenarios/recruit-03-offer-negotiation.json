@@ -1,0 +1,690 @@
+{
+  "$schema": "../schema/scenario.schema.json",
+  "id": "recruit-03-offer-negotiation",
+  "schemaVersion": 1,
+  "track": { "id": "recruit", "name": "채용", "stage": 3 },
+  "title": "오퍼 협상",
+  "summary": "3개월 걸린 백엔드 시니어 채용의 마지막 관문. 후보자는 밴드 상단을 800만원 넘는 금액을 요구하고, 회신 기한은 오늘 오전 11시다.",
+  "estimatedMinutes": 10,
+  "companyId": "lift",
+  "today": "2026-07-27",
+
+  "player": {
+    "name": "승헌",
+    "team": "피플팀",
+    "role": "채용 담당",
+    "tenure": "1년차",
+    "addressedAs": "승헌님"
+  },
+
+  "clock": {
+    "startTime": "09:20",
+    "deadlineTime": "11:00",
+    "deadlineLabel": "정하람님에게 회신 약속한 시각",
+    "minutesPerMessage": 12,
+    "maxTurns": 8,
+    "documentReadCostsTurn": false
+  },
+
+  "phases": [
+    {
+      "id": "briefing",
+      "name": "상황 브리핑",
+      "description": "출근 직후. 무슨 일이 벌어졌는지 확인한다.",
+      "allows": [],
+      "advanceOn": "acknowledge"
+    },
+    {
+      "id": "investigate",
+      "name": "조사 · 협상",
+      "description": "자료실을 열람하고 두 사람과 메신저로 대화한다. 메시지 1건마다 12분이 흐른다.",
+      "allows": ["read_documents", "message_npc", "submit_offer"],
+      "advanceOn": "turns_exhausted_or_submit"
+    },
+    {
+      "id": "decision",
+      "name": "오퍼 작성",
+      "description": "오퍼 조건과 후보자에게 보낼 메시지를 확정한다. 제출은 되돌릴 수 없다.",
+      "allows": ["read_documents", "submit_offer"],
+      "advanceOn": "submit_offer"
+    },
+    {
+      "id": "result",
+      "name": "결과",
+      "description": "정하람님의 회신이 도착한다.",
+      "allows": ["view_report"],
+      "advanceOn": "grade_complete"
+    },
+    {
+      "id": "debrief",
+      "name": "AAR",
+      "description": "5축 점수와 D+21 후속을 확인한다.",
+      "allows": ["view_report"]
+    }
+  ],
+
+  "briefing": {
+    "headline": "월요일 09:20 — 정하람님 오퍼 회신까지 1시간 40분",
+    "situation": [
+      "프로덕트본부 플랫폼팀 백엔드 시니어(D4) 포지션이 3개월 만에 최종 합격자를 냈습니다. 정하람님입니다.",
+      "정하람님은 현직 계약연봉 7,900에 미행사 스톡옵션을 보유 중이고, 스톡옵션 상실분 보전을 이유로 8,600을 요구했습니다.",
+      "B사 오퍼를 함께 들고 있고 그쪽 마감은 목요일입니다. 우리에게는 오늘 오전 11시까지 답을 주기로 했습니다.",
+      "D4 밴드 상단은 7,800입니다. 8,600은 밴드를 800 초과하고, 팀 내 D4 최고 연봉자인 오세진님(7,450)보다 1,150 높습니다.",
+      "8월 전사 연봉 조정이 코앞입니다."
+    ],
+    "objective": "11시까지 실행 가능한 오퍼 하나를 확정해 정하람님에게 보낸다.",
+    "constraints": [
+      "메시지 1건에 12분이 소모되고, 오늘 쓸 수 있는 메시지는 총 8건이다.",
+      "자료실 열람은 시간을 소모하지 않는다. 안 보고 결정하면 채점에서 드러난다.",
+      "오퍼 제출은 되돌릴 수 없다."
+    ]
+  },
+
+  "position": {
+    "orgUnit": "프로덕트본부",
+    "team": "플랫폼팀",
+    "title": "백엔드 시니어",
+    "level": "D4",
+    "requestedBy": "김도현 플랫폼팀장",
+    "requestedAt": "2026-04-14",
+    "elapsed": "3개월차",
+    "approvedHeadcount": 1,
+    "reason": "정산·결제 모듈 리아키텍처. 현 인원으로는 하반기 로드맵을 소화할 수 없다.",
+    "funnel": [
+      { "step": "서류", "count": 42 },
+      { "step": "1차 면접", "count": 9 },
+      { "step": "최종 면접", "count": 2 },
+      { "step": "합격", "count": 1 }
+    ]
+  },
+
+  "candidate": {
+    "name": "정하람",
+    "age": 33,
+    "totalExperienceYears": 7,
+    "current": {
+      "company": "A사",
+      "role": "백엔드 엔지니어",
+      "tenure": "4년 3개월",
+      "salary": 7900,
+      "equity": "미행사 스톡옵션 보유. 이직 시 상실한다."
+    },
+    "ask": {
+      "salary": 8600,
+      "reason": "현직 미행사 스톡옵션 상실분 보전"
+    },
+    "assessment": {
+      "strength": "정산·결제 도메인 이해도가 지원자 중 압도적으로 높다. 최종 면접 전원 합격 의견.",
+      "gap": "리드 경험은 공식 직책이 아니라 비공식 멘토링 수준에 그친다.",
+      "verdict": "D4 시니어로 즉시 투입 가능. D5 리드 승격은 검증되지 않았다."
+    },
+    "competingOffer": {
+      "company": "B사",
+      "deadline": "목요일",
+      "note": "금액 수준은 밝히지 않았다."
+    },
+    "responseDeadline": "2026-07-27 11:00"
+  },
+
+  "npcDirection": {
+    "rules": [
+      "한국어로 말한다. 1~4문장. 실제 사내 메신저 말투를 쓴다.",
+      "이모지는 쓰지 않거나 최대 1개.",
+      "정답을 알려주지 않는다. 대안을 대신 설계해 주지 않는다. 결정은 플레이어가 한다.",
+      "자기 역할이 알 만한 것만 안다. 모르는 건 모른다고 한다. 없는 사실을 지어내지 않는다.",
+      "숨은 정보는 그 주제를 구체적으로 물었을 때만 자연스럽게 흘린다. 먼저 꺼내지 않는다.",
+      "플레이어를 addressedAs 호칭으로 부른다.",
+      "국면 전환이나 게임 진행에 대해 언급하지 않는다. 진행은 시스템이 통제한다."
+    ],
+    "trustBehavior": [
+      { "below": 50, "behavior": "짧고 방어적으로 답한다. 되묻지 않고 최소한만 준다." },
+      { "atLeast": 50, "below": 70, "behavior": "평소대로 사무적으로 답한다." },
+      { "atLeast": 70, "below": 101, "behavior": "협조적이고, 묻지 않은 것도 먼저 힌트를 준다." }
+    ],
+    "trustRules": [
+      { "when": "근거를 갖춘 질문을 하거나 상대의 입장·제약을 명시적으로 인정했다", "delta": [2, 5] },
+      { "when": "무난한 확인이나 사실 전달", "delta": [0, 1] },
+      { "when": "근거 없이 요구만 하거나, 책임을 회피하거나, 상대를 무시했다", "delta": [-6, -2] }
+    ]
+  },
+
+  "npcs": [
+    {
+      "id": "kim-dohyeon",
+      "name": "김도현",
+      "title": "프로덕트본부 플랫폼팀장",
+      "age": 38,
+      "avatar": "/avatars/kim-dohyeon.png",
+      "relationToPlayer": "채용 요청 부서장. 플레이어의 고객이자 압박의 근원.",
+      "initialTrust": 50,
+      "persona": {
+        "voice": "개발자 출신. 직설적이고 성격이 급하다. 존댓말이지만 문장이 짧고 압박이 있다. 에두르지 않는다.",
+        "goal": "무조건 정하람님을 잡는 것. 정산 모듈 리아키텍처 일정이 이미 2주 밀렸다.",
+        "pressureTactic": "피플팀이 절차나 규정을 꺼내면 \"그래서 놓치면 누가 책임지냐\"는 식으로 밀어붙인다.",
+        "hiddenCircumstance": "분기 팀 OKR 달성이 어려워 본부장에게 압박받는 중이다. 먼저 말하지 않는다."
+      },
+      "knows": [
+        "정하람님의 기술 역량과 면접 평가 내용",
+        "플랫폼팀의 일정 지연 상황과 로드맵",
+        "팀원들의 업무 분장",
+        "최종 면접 후 후보자와 나눈 대화"
+      ],
+      "doesNotKnow": [
+        "회사의 결재 권한 체계와 소요 기간",
+        "사이닝 보너스 한도나 CFO 전결 여부",
+        "8월 전사 연봉 조정의 내부 검토안",
+        "다른 팀의 연봉 수준"
+      ],
+      "dataAccess": [],
+      "openingMessage": "승헌님, 정하람님 건 어떻게 됐어요? 11시까지 답 준다고 했는데 지금 9시 20분입니다. 8,600 그냥 맞춰주시죠. 3개월 걸렸어요.",
+      "secrets": [
+        {
+          "id": "haram-wants-lead-role",
+          "topic": "후보자의 진짜 동기",
+          "content": "최종 면접 끝나고 커피챗을 했는데, 정하람님이 돈보다 리드 롤을 맡고 싶다고 했다. B사는 조직 규모가 커서 부담스럽다는 말도 했다.",
+          "importance": "critical",
+          "unlocks": "금액이 아닌 성장 경로(조기 리뷰, 리드 트랙)로 요구액과의 간극을 메울 수 있게 된다.",
+          "revealWhen": {
+            "requiresSpecificQuestion": true,
+            "keywords": [
+              "커피챗", "면접 후", "면접 때", "후보자", "정하람", "동기", "왜 이직",
+              "이직 이유", "원하는", "바라는", "리드", "롤", "역할", "성장",
+              "B사", "경쟁사", "다른 회사", "무슨 얘기", "분위기"
+            ],
+            "minTrust": 40
+          }
+        }
+      ]
+    },
+    {
+      "id": "park-seoyeon",
+      "name": "박서연",
+      "title": "피플팀장",
+      "age": 41,
+      "avatar": "/avatars/park-seoyeon.png",
+      "relationToPlayer": "플레이어의 사수이자 직속 상사.",
+      "initialTrust": 60,
+      "persona": {
+        "voice": "차분하고 근거를 요구한다. 대안 없이 \"안 됩니다\"라고 하지 않지만, 숫자와 형평성 논리를 반드시 확인한다. 가르치기보다 되묻는다. 예: \"그럼 오세진님한테는 뭐라고 설명하실 거예요?\"",
+        "goal": "인건비 총액 통제와 내부 형평성 유지. 8월 조정을 앞둔 상황을 가장 신경 쓴다.",
+        "pressureTactic": "결론만 들이밀면 근거를 되묻는다. 근거 없이 밀어붙이면 신뢰도가 떨어진다.",
+        "hiddenCircumstance": "8월 조정 협상을 본인이 주도해야 해서, 지금 밴드가 깨지면 그 협상 전체가 흔들린다는 걸 알고 있다."
+      },
+      "knows": [
+        "연봉 밴드와 결재 권한 체계 전부",
+        "사이닝 보너스·스톡옵션의 승인 경로와 소요 기간",
+        "전사 재직자 연봉과 내부 형평성 이슈",
+        "2026 하반기 TO 현황",
+        "8월 전사 조정 준비 상황"
+      ],
+      "doesNotKnow": [
+        "정하람님의 기술 역량 평가 세부 내용",
+        "플랫폼팀 내부 일정과 로드맵",
+        "김도현 팀장이 후보자와 사적으로 나눈 대화"
+      ],
+      "dataAccess": [
+        "compensation.bands",
+        "compensation.approvals",
+        "compensation.headcountPlan",
+        "employees"
+      ],
+      "openingMessage": "승헌님, 정하람님 오퍼 건 정리해서 저한테 먼저 공유해 주세요. 김도현 팀장님이 저한테도 연락하셨는데, 밴드 초과는 대표님 결재라 오늘 안에는 안 됩니다.",
+      "secrets": [
+        {
+          "id": "signing-bonus-cfo-same-day",
+          "topic": "오늘 안에 처리 가능한 승인 경로",
+          "content": "사이닝 보너스는 CFO 전결이라 오늘 안에 승인받을 수 있다. 밴드 초과 결재보다 훨씬 빠르다. 1인 3,000만원 한도이고 2년 내 자진 퇴사하면 전액 반환 조건이 붙는다.",
+          "importance": "critical",
+          "unlocks": "밴드를 지키면서 총보상을 요구액 근처까지 올리는 유일한 당일 실행 수단.",
+          "revealWhen": {
+            "requiresSpecificQuestion": true,
+            "keywords": [
+              "사이닝", "보너스", "일시금", "결재", "승인", "전결", "오늘 안", "당일",
+              "빠른", "대안", "다른 방법", "총보상", "현금", "CFO", "권한"
+            ],
+            "minTrust": 45
+          }
+        },
+        {
+          "id": "august-band-raise-draft",
+          "topic": "8월 조정의 밴드 인상 검토안",
+          "content": "8월 조정에서 D4 상단을 8,200으로 올리는 안이 내부 검토 중이다. 아직 미공개이고 확정도 아니다. 밖으로 나가면 안 되고, 후보자에게 약속으로 말해서도 안 된다.",
+          "importance": "helpful",
+          "unlocks": "6개월 후 조기 리뷰 조건이 빈말이 아니라는 근거가 생긴다.",
+          "revealWhen": {
+            "requiresSpecificQuestion": true,
+            "keywords": [
+              "8월", "조정", "밴드 인상", "상단", "내년", "나중에", "리뷰",
+              "조기 리뷰", "재조정", "형평성", "오세진", "기존 인원"
+            ],
+            "minTrust": 55
+          }
+        }
+      ]
+    }
+  ],
+
+  "documents": [
+    {
+      "id": "doc-hiring-request",
+      "title": "채용요청서",
+      "kind": "채용",
+      "issuedAt": "2026-04-14",
+      "summary": "플랫폼팀 백엔드 시니어 1명 채용 요청서. 승인 TO와 제시 가능 밴드가 여기 적혀 있다.",
+      "blocks": [
+        {
+          "type": "fields",
+          "items": [
+            { "label": "요청부서", "value": "프로덕트본부 플랫폼팀" },
+            { "label": "요청자", "value": "김도현 팀장" },
+            { "label": "직무", "value": "백엔드 시니어" },
+            { "label": "레벨", "value": "D4", "emphasis": true },
+            { "label": "요청일", "value": "2026-04-14 (진행 3개월차)" },
+            { "label": "승인 TO", "value": "1명 (2026 하반기 잔여 7명 중)" },
+            { "label": "제시 가능 밴드", "value": "6,200 ~ 7,800 만원", "emphasis": true }
+          ]
+        },
+        {
+          "type": "text",
+          "heading": "요청 사유",
+          "text": "정산·결제 모듈 리아키텍처가 하반기 최우선 과제이나 현 인원으로는 로드맵 소화가 불가능함. 정산 도메인 경험이 있는 시니어 1명 충원 요청."
+        },
+        {
+          "type": "table",
+          "heading": "진행 현황",
+          "columns": ["단계", "인원"],
+          "rows": [
+            ["서류", "42"],
+            ["1차 면접", "9"],
+            ["최종 면접", "2"],
+            ["최종 합격", "1"]
+          ]
+        },
+        {
+          "type": "note",
+          "text": "요청일로부터 3개월이 경과했습니다. 최종 합격자는 정하람님 1명입니다."
+        }
+      ]
+    },
+    {
+      "id": "doc-comp-band",
+      "title": "연봉밴드 및 결재 권한",
+      "kind": "보상",
+      "issuedAt": "2026-01",
+      "summary": "2026년 개발직군 레벨별 밴드와, 밴드를 벗어나는 조건에 필요한 결재 경로.",
+      "blocks": [
+        {
+          "type": "companyTable",
+          "heading": "2026년 개발직군 밴드 (만원)",
+          "ref": "compensation.bands",
+          "columns": [
+            { "key": "level", "label": "레벨" },
+            { "key": "min", "label": "하단", "format": "number" },
+            { "key": "max", "label": "상단", "format": "number" },
+            { "key": "note", "label": "비고" }
+          ]
+        },
+        {
+          "type": "companyTable",
+          "heading": "결재 권한",
+          "ref": "compensation.approvals",
+          "columns": [
+            { "key": "subject", "label": "항목" },
+            { "key": "finalApprover", "label": "최종 결재" },
+            { "key": "summary", "label": "내용" }
+          ]
+        },
+        {
+          "type": "text",
+          "heading": "운영 원칙",
+          "text": "계약연봉 = 기본연봉이며 퇴직금은 별도입니다. 성과급은 연 1회 별도 지급하며 계약연봉에 포함하지 않습니다. 전사 연봉 조정은 매년 8월에 시행합니다."
+        },
+        {
+          "type": "companyTable",
+          "heading": "2026 하반기 채용 TO",
+          "ref": "compensation.headcountPlan",
+          "columns": [
+            { "key": "period", "label": "기간" },
+            { "key": "remaining", "label": "잔여", "format": "number" },
+            { "key": "note", "label": "비고" }
+          ]
+        },
+        {
+          "type": "note",
+          "text": "D5 이상은 TO가 없습니다. 레벨 상향으로 금액을 맞추는 방식은 절차상 불가능합니다."
+        }
+      ]
+    },
+    {
+      "id": "doc-team-roster",
+      "title": "플랫폼팀 백엔드 재직자 현황",
+      "kind": "인사",
+      "issuedAt": "2026-07",
+      "summary": "이번 포지션이 들어갈 팀의 기존 인원 연봉·평가. 내부 형평성 판단의 기준선.",
+      "blocks": [
+        {
+          "type": "companyTable",
+          "heading": "재직자 (만원)",
+          "ref": "employees",
+          "filter": { "teamId": "platform", "jobFamily": "백엔드" },
+          "columns": [
+            { "key": "name", "label": "이름" },
+            { "key": "levelLabel", "label": "레벨" },
+            { "key": "joinedAt", "label": "입사" },
+            { "key": "salary", "label": "연봉", "format": "number" },
+            { "key": "lastReviewGrade", "label": "2025 평가" }
+          ]
+        },
+        {
+          "type": "note",
+          "text": "팀 내 연봉은 비공개 원칙이나, 실제로는 공유되는 편입니다."
+        }
+      ]
+    },
+    {
+      "id": "doc-candidate-profile",
+      "title": "후보자 프로필 — 정하람",
+      "kind": "채용",
+      "issuedAt": "2026-07-24",
+      "summary": "최종 합격자의 경력, 현 연봉, 요구 연봉, 평가 요지, 타사 상황, 회신 기한.",
+      "blocks": [
+        {
+          "type": "fields",
+          "items": [
+            { "label": "이름", "value": "정하람 (만 33세)" },
+            { "label": "총 경력", "value": "7년" },
+            { "label": "현직", "value": "A사 백엔드 엔지니어 4년 3개월" },
+            { "label": "현 계약연봉", "value": "7,900 만원" },
+            { "label": "현 지분", "value": "미행사 스톡옵션 보유 (이직 시 상실)" },
+            { "label": "요구 연봉", "value": "8,600 만원", "emphasis": true },
+            { "label": "요구 사유", "value": "미행사 스톡옵션 상실분 보전" }
+          ]
+        },
+        {
+          "type": "text",
+          "heading": "평가 요지",
+          "text": "정산·결제 도메인 이해도가 지원자 중 압도적으로 높습니다. 최종 면접 전원 합격 의견. 다만 리드 경험은 공식 직책이 아니라 비공식 멘토링 수준에 그칩니다. D4 시니어로 즉시 투입 가능하나, D5 리드 승격은 검증되지 않았습니다."
+        },
+        {
+          "type": "fields",
+          "heading": "타사 상황",
+          "items": [
+            { "label": "경쟁 오퍼", "value": "B사 오퍼 보유 (금액 미공개)" },
+            { "label": "B사 마감", "value": "목요일" },
+            { "label": "당사 회신 기한", "value": "오늘(월) 오전 11:00", "emphasis": true }
+          ]
+        },
+        {
+          "type": "note",
+          "text": "회신 기한은 후보자가 먼저 제시했고 채용 담당자가 수락한 약속입니다."
+        }
+      ]
+    }
+  ],
+
+  "offerForm": {
+    "title": "오퍼 확정",
+    "description": "확정한 조건과 후보자에게 보낼 메시지를 함께 제출합니다.",
+    "irreversible": true,
+    "confirmText": "제출하면 정하람님에게 즉시 발송되며 되돌릴 수 없습니다. 제출하시겠습니까?",
+    "fields": [
+      {
+        "id": "contractSalary",
+        "label": "계약연봉",
+        "type": "number",
+        "unit": "만원",
+        "required": true,
+        "min": 0,
+        "max": 20000,
+        "placeholder": "7800",
+        "help": "퇴직금 별도. D4 밴드는 6,200~7,800입니다."
+      },
+      {
+        "id": "signingBonus",
+        "label": "사이닝 보너스",
+        "type": "number",
+        "unit": "만원",
+        "required": false,
+        "min": 0,
+        "max": 5000,
+        "placeholder": "0",
+        "help": "0이면 미지급."
+      },
+      {
+        "id": "grantStockOption",
+        "label": "스톡옵션 추가 부여",
+        "type": "boolean",
+        "required": false,
+        "help": "분기 이사회 승인 사항입니다."
+      },
+      {
+        "id": "earlyReview6m",
+        "label": "6개월 후 조기 리뷰 조건",
+        "type": "boolean",
+        "required": false,
+        "help": "입사 6개월 시점에 연봉을 재검토한다는 조건을 계약에 명시합니다."
+      },
+      {
+        "id": "promoteToD5",
+        "label": "D5 상향",
+        "type": "boolean",
+        "required": false,
+        "help": "레벨을 D5로 올려 제시합니다."
+      },
+      {
+        "id": "messageToCandidate",
+        "label": "정하람님에게 보낼 메시지",
+        "type": "textarea",
+        "required": true,
+        "minLength": 60,
+        "placeholder": "조건과 그 근거, 그리고 왜 이 오퍼가 정하람님에게 의미 있는지를 씁니다.",
+        "help": "금액만 적으면 설득력 점수가 낮습니다."
+      }
+    ]
+  },
+
+  "scoring": {
+    "strictness": "후하게 주지 않는다. 기본값은 50점대이고, 근거와 실행 가능성이 확인될 때만 올린다. 80점 이상은 자료를 읽고 두 NPC의 정보를 모두 확보한 뒤 트레이드오프를 명시적으로 다룬 답에만 준다.",
+    "rubricBands": [
+      { "min": 90, "label": "탁월", "meaning": "현직 시니어의 판단과 구분이 안 된다." },
+      { "min": 70, "label": "양호", "meaning": "실무에서 통과할 수준. 빈틈은 있다." },
+      { "min": 50, "label": "보통", "meaning": "방향은 맞지만 근거나 실행력이 얕다." },
+      { "min": 0, "label": "미흡", "meaning": "실무였다면 사고가 났다." }
+    ],
+    "axes": [
+      {
+        "id": "hire_success",
+        "name": "채용 성사",
+        "criteria": "총보상 수준과 메시지의 설득력. 정하람님이 이 오퍼를 받아들일 이유가 있는가.",
+        "weight": 1,
+        "looksLike": {
+          "high": [
+            "요구액과의 간극을 총보상(현금+일시금+성장 조건)으로 좁혔다",
+            "메시지가 후보자의 실제 동기(리드 롤 지향)를 건드린다",
+            "B사 대비 우리가 나은 점을 구체적으로 말했다"
+          ],
+          "low": [
+            "금액만 통보했다",
+            "간극에 대한 설명 없이 밴드 상단만 제시했다",
+            "후보자가 왜 이직하려는지 전혀 파악하지 않았다"
+          ]
+        }
+      },
+      {
+        "id": "internal_equity",
+        "name": "내부 형평성",
+        "criteria": "기존 D4(오세진 7,450)·D5 리드(배준혁 9,200)와의 관계, 8월 전사 조정에 미칠 리스크.",
+        "weight": 1,
+        "looksLike": {
+          "high": [
+            "기존 인원과의 역전·근접을 숫자로 확인했다",
+            "8월 조정 협상에 미칠 파급을 고려했다",
+            "형평성 훼손을 감수한 경우 그 대가를 명시적으로 인정했다"
+          ],
+          "low": [
+            "8,600을 그대로 수용해 D5 리드에 근접시켰다",
+            "기존 인원 연봉을 한 번도 언급하지 않았다",
+            "밴드가 깨지면 8월에 무슨 일이 생기는지 생각하지 않았다"
+          ]
+        }
+      },
+      {
+        "id": "cost_process",
+        "name": "비용 · 절차",
+        "criteria": "밴드와 결재 권한을 지켰는가. 그리고 오늘 11시까지 실제로 실행 가능한 안인가.",
+        "weight": 1,
+        "looksLike": {
+          "high": [
+            "당일 승인 가능한 수단(사이닝 보너스 CFO 전결)만으로 안을 구성했다",
+            "사이닝 보너스 3,000 한도와 반환 조건을 지켰다",
+            "이사회 일정 때문에 스톡옵션이 오늘 확정될 수 없음을 인지했다"
+          ],
+          "low": [
+            "밴드 초과 오퍼를 오늘 보낼 수 있다고 가정했다",
+            "TO가 없는 D5로 올렸다",
+            "결재 경로를 확인하지 않고 조건을 약속했다"
+          ]
+        }
+      },
+      {
+        "id": "stakeholder_trust",
+        "name": "이해관계자 신뢰",
+        "criteria": "김도현·박서연 두 사람을 모두 설득했는가. 한쪽 편만 들지 않았는가.",
+        "weight": 1,
+        "looksLike": {
+          "high": [
+            "두 사람 모두와 대화했고 각자의 제약을 인정했다",
+            "김도현에게는 일정 리스크로, 박서연에게는 형평성 논리로 설명했다",
+            "종료 시 두 NPC의 신뢰도가 모두 초기값 이상이다"
+          ],
+          "low": [
+            "한 명하고만 대화했다",
+            "현업 압박에 그대로 밀려 팀장 결재선을 건너뛰었다",
+            "규정만 반복해 현업의 다급함을 무시했다"
+          ]
+        }
+      },
+      {
+        "id": "data_grounding",
+        "name": "데이터 근거성",
+        "criteria": "자료실을 열람했는가. 대화와 결정에서 실제 숫자를 근거로 삼았는가.",
+        "weight": 1,
+        "looksLike": {
+          "high": [
+            "4종 문서를 모두 열람했다",
+            "밴드 상단·기존 인원 연봉·한도 같은 구체 수치를 인용해 말했다",
+            "요구액과 밴드의 차이를 정량적으로 다뤘다"
+          ],
+          "low": [
+            "자료를 열지 않고 결정했다",
+            "\"많다\", \"부담된다\" 같은 형용사만 썼다",
+            "잘못된 숫자를 근거로 들었다"
+          ]
+        }
+      }
+    ],
+    "modelSolution": {
+      "summary": "계약연봉 7,800(밴드 상단) + 사이닝 보너스 1,000~1,500 + 6개월 후 조기 리뷰 조건 + 스톡옵션. 총보상으로 요구액에 근접시키면서 밴드와 내부 형평성은 유지하고, 오늘 안에 실행 가능하다.",
+      "components": [
+        "계약연봉 7,800 — 밴드 상단. 대표이사 결재 불필요, 오늘 발송 가능.",
+        "사이닝 보너스 1,000~1,500 — CFO 전결이라 당일 승인. 스톡옵션 상실분 보전이라는 요구 사유에 정확히 대응하며, 계약연봉이 아니므로 내부 형평성을 건드리지 않는다.",
+        "6개월 후 조기 리뷰 — 8월 조정에서 D4 상단이 오를 가능성을 근거로 삼되, 후보자에게는 확정으로 약속하지 않는다.",
+        "스톡옵션 — 9월 이사회 안건으로 상정. 리드 롤을 지향하는 후보자의 동기에 맞는 장기 신호."
+      ],
+      "rationale": "요구액 8,600과의 간극 800을 계약연봉이 아닌 일시금과 조건으로 메운다. 밴드가 유지되므로 오세진(7,450)과의 역전 폭이 350에 그치고, 8월 조정 협상의 전제도 깨지지 않는다.",
+      "disclaimer": "이것은 채점 기준일 뿐 유일한 정답이 아니다. 다른 구성이라도 트레이드오프를 인식하고 근거를 갖췄다면 높게 평가한다."
+    },
+    "penalties": [
+      {
+        "id": "d5-promotion",
+        "when": "D5 상향을 선택했다",
+        "effect": "D5 이상 TO가 없으므로 절차상 무리한 선택. 비용·절차 축을 크게 감점하고 총평에서 명시적으로 지적한다.",
+        "axisId": "cost_process",
+        "detect": { "kind": "booleanField", "field": "promoteToD5" }
+      },
+      {
+        "id": "band-exceed-today",
+        "when": "계약연봉을 7,800 초과로 제시했다",
+        "effect": "대표이사 결재 2~3영업일이 필요해 오늘 11시까지 실행 불가능하다. 비용·절차 축에서 크게 감점한다.",
+        "axisId": "cost_process",
+        "detect": { "kind": "exceedsBandMax", "field": "contractSalary" }
+      },
+      {
+        "id": "signing-bonus-over-limit",
+        "when": "사이닝 보너스가 3,000을 초과한다",
+        "effect": "CFO 전결 한도 초과. 당일 승인이 불가능해진다.",
+        "axisId": "cost_process",
+        "detect": {
+          "kind": "exceedsApprovalLimit",
+          "field": "signingBonus",
+          "approvalId": "signing-bonus"
+        }
+      },
+      {
+        "id": "no-documents-read",
+        "when": "자료실 문서를 하나도 열람하지 않았다",
+        "effect": "데이터 근거성 점수를 40점 이하로 제한한다.",
+        "axisId": "data_grounding",
+        "capAt": 40,
+        "detect": { "kind": "noDocumentsRead" }
+      },
+      {
+        "id": "single-npc-only",
+        "when": "두 NPC 중 한 명하고만 대화했다",
+        "effect": "숨은 정보의 절반만 확보한 상태다. 이해관계자 신뢰 축을 60점 이하로 제한한다.",
+        "axisId": "stakeholder_trust",
+        "capAt": 60,
+        "detect": { "kind": "singleNpcOnly" }
+      },
+      {
+        "id": "promised-unconfirmed-band-raise",
+        "when": "미확정인 8월 D4 상단 인상안을 후보자에게 약속으로 전달했다",
+        "effect": "미공개·미확정 정보를 외부에 확약한 것이다. 비용·절차와 이해관계자 신뢰를 모두 감점한다.",
+        "axisId": "cost_process"
+      }
+    ]
+  },
+
+  "aar": {
+    "outcomeOptions": ["수락", "거절", "보류"],
+    "sections": [
+      {
+        "id": "candidate_reply",
+        "title": "정하람님의 회신",
+        "kind": "outcome",
+        "instruction": "제출된 오퍼와 메시지를 근거로 수락·거절·보류 중 하나를 정하고, 정하람님 본인의 말투로 3~5문장 회신을 쓴다. 총보상 수준과 메시지가 후보자의 실제 동기를 건드렸는지에 따라 결정한다. 요구액에 한참 못 미치면서 설명도 없으면 거절한다."
+      },
+      {
+        "id": "scores",
+        "title": "5축 평가",
+        "kind": "scores",
+        "instruction": "각 축 0~100. 후하게 주지 않는다. 축마다 그 점수를 준 근거를 플레이어의 실제 행동에서 인용해 2~3문장으로 쓴다."
+      },
+      {
+        "id": "overall",
+        "title": "총평",
+        "kind": "prose",
+        "instruction": "이번 판에서 가장 중요했던 트레이드오프가 무엇이었고, 플레이어가 그것을 봤는지를 4~6문장으로 쓴다. 칭찬으로 시작해 문제로 끝내지 말고, 사실을 순서대로 쓴다."
+      },
+      {
+        "id": "reflection",
+        "title": "돌아보기",
+        "kind": "bullets",
+        "bulletCount": 3,
+        "instruction": "다음 판에 바로 적용할 수 있는 구체적인 행동 3줄. 추상적인 조언 금지. 예: \"박서연님에게 결재 경로를 먼저 물었다면 사이닝 보너스 선택지를 8분 만에 찾았을 것\"."
+      },
+      {
+        "id": "day21",
+        "title": "D+21에 벌어진 일",
+        "kind": "timeline",
+        "instruction": "이 결정의 3주 후 결과를 구체적 장면으로 쓴다. 오퍼가 수락됐다면 오세진님이 연봉을 알게 됐는지, 8월 조정 협상이 어떻게 흘러갔는지. 거절됐다면 플랫폼팀 일정과 재공고가 어떻게 됐는지. 낙관도 비관도 하지 말고 인과만 쓴다."
+      },
+      {
+        "id": "if_you_were_senior",
+        "title": "현직이라면",
+        "kind": "prose",
+        "instruction": "같은 상황에서 경력 10년차 HR이 무엇을 다르게 했을지 3~4문장. 모범 해법을 그대로 읊지 말고, 플레이어가 실제로 놓친 지점 하나를 골라 그것만 깊게 다룬다."
+      }
+    ]
+  }
+}

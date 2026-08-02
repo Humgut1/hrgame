@@ -1,0 +1,191 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hrgame.local/schema/company.schema.json",
+  "title": "Company master data",
+  "description": "전 시나리오 공용 마스터 데이터. 급여 밴드·결재 권한·재직자처럼 여러 시나리오가 공유하는 사실은 오직 여기에만 존재한다. 시나리오 JSON은 companyTable 블록으로 이 파일을 참조한다.",
+  "type": "object",
+  "required": ["id", "name", "asOf", "orgUnits", "teams", "compensation", "employees"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+    "name": { "type": "string" },
+    "nameEn": { "type": "string" },
+    "product": {
+      "type": "object",
+      "required": ["name", "description"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": "string" }
+      }
+    },
+    "foundedAt": { "type": "string", "pattern": "^\\d{4}-\\d{2}$" },
+    "location": { "type": "string" },
+    "asOf": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}$",
+      "description": "이 데이터의 기준 시점. 시나리오의 today와 어긋나면 안 된다."
+    },
+    "headcount": { "type": "integer", "minimum": 1 },
+    "funding": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["round", "amountKRW", "closedAt"],
+        "additionalProperties": false,
+        "properties": {
+          "round": { "type": "string" },
+          "amountKRW": { "type": "integer" },
+          "closedAt": { "type": "string", "pattern": "^\\d{4}-\\d{2}$" }
+        }
+      }
+    },
+    "financials": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["fiscalYear", "revenueKRW", "operatingProfitKRW"],
+        "additionalProperties": false,
+        "properties": {
+          "fiscalYear": { "type": "integer" },
+          "revenueKRW": { "type": "integer" },
+          "operatingProfitKRW": { "type": "integer" },
+          "note": { "type": "string" }
+        }
+      }
+    },
+    "orgUnits": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "headcount"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+          "name": { "type": "string" },
+          "headcount": { "type": "integer", "minimum": 0 }
+        }
+      }
+    },
+    "teams": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "orgUnitId"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+          "name": { "type": "string" },
+          "orgUnitId": { "type": "string", "description": "orgUnits[].id 참조" },
+          "headcount": { "type": "integer", "minimum": 0 },
+          "leaderName": { "type": "string" },
+          "composition": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["role", "count"],
+              "additionalProperties": false,
+              "properties": {
+                "role": { "type": "string" },
+                "count": { "type": "integer", "minimum": 0 }
+              }
+            }
+          }
+        }
+      }
+    },
+    "compensation": {
+      "type": "object",
+      "required": ["salaryUnit", "bands", "approvals"],
+      "additionalProperties": false,
+      "properties": {
+        "salaryUnit": {
+          "const": "KRW_10K",
+          "description": "모든 연봉·보너스 금액의 단위는 만원. UI와 폼 입력도 동일 단위를 쓴다."
+        },
+        "policy": { "type": "array", "items": { "type": "string" } },
+        "annualReviewMonth": { "type": "integer", "minimum": 1, "maximum": 12 },
+        "bands": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["level", "min", "max"],
+            "additionalProperties": false,
+            "properties": {
+              "level": { "type": "string" },
+              "jobFamily": { "type": "string" },
+              "min": { "type": "integer", "minimum": 0 },
+              "max": { "type": "integer", "minimum": 0 },
+              "note": { "type": "string" }
+            }
+          }
+        },
+        "approvals": {
+          "type": "array",
+          "minItems": 1,
+          "description": "결재 권한. sameDayPossible이 절차 축 채점의 핵심 판정 근거가 된다.",
+          "items": {
+            "type": "object",
+            "required": ["id", "subject", "finalApprover", "sameDayPossible", "summary"],
+            "additionalProperties": false,
+            "properties": {
+              "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+              "subject": { "type": "string" },
+              "chain": { "type": "array", "items": { "type": "string" } },
+              "finalApprover": { "type": "string" },
+              "leadTimeBusinessDays": {
+                "type": "array",
+                "minItems": 2,
+                "maxItems": 2,
+                "items": { "type": "integer", "minimum": 0 }
+              },
+              "cadence": { "type": "string" },
+              "nextDecisionAt": { "type": "string" },
+              "limitPerPerson": { "type": "integer", "minimum": 0 },
+              "clawback": { "type": "string" },
+              "sameDayPossible": { "type": "boolean" },
+              "summary": { "type": "string", "description": "표에 그대로 렌더할 한 줄 요약" }
+            }
+          }
+        },
+        "headcountPlan": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["period", "remaining"],
+            "additionalProperties": false,
+            "properties": {
+              "period": { "type": "string" },
+              "remaining": { "type": "integer", "minimum": 0 },
+              "closedLevels": { "type": "array", "items": { "type": "string" } },
+              "note": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "employees": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "teamId", "level", "joinedAt", "salary"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+          "name": { "type": "string" },
+          "teamId": { "type": "string", "description": "teams[].id 참조" },
+          "jobFamily": { "type": "string" },
+          "level": { "type": "string" },
+          "levelLabel": { "type": "string", "description": "표 렌더용. 예: \"D5 (팀 리드)\"" },
+          "joinedAt": { "type": "string", "pattern": "^\\d{4}-\\d{2}$" },
+          "salary": { "type": "integer", "minimum": 0 },
+          "lastReviewGrade": { "type": "string" },
+          "lastReviewYear": { "type": "integer" }
+        }
+      }
+    }
+  }
+}

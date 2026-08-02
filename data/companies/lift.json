@@ -1,0 +1,157 @@
+{
+  "$schema": "../schema/company.schema.json",
+  "id": "lift",
+  "name": "㈜리프트",
+  "nameEn": "LIFT Inc.",
+  "product": {
+    "name": "LIFT OMS",
+    "description": "커머스 물류 자동화 SaaS. 주문·재고·배송을 하나로 관리한다."
+  },
+  "foundedAt": "2018-03",
+  "location": "서울 성동구 성수동",
+  "asOf": "2026-07",
+  "headcount": 214,
+  "funding": [
+    { "round": "Series C", "amountKRW": 48000000000, "closedAt": "2024-11" }
+  ],
+  "financials": [
+    {
+      "fiscalYear": 2025,
+      "revenueKRW": 41200000000,
+      "operatingProfitKRW": -3800000000,
+      "note": "적자 축소 국면. 인건비 총액에 민감하다."
+    }
+  ],
+  "orgUnits": [
+    { "id": "product", "name": "프로덕트본부", "headcount": 96 },
+    { "id": "sales", "name": "세일즈본부", "headcount": 58 },
+    { "id": "operation", "name": "오퍼레이션본부", "headcount": 41 },
+    { "id": "corporate", "name": "경영지원본부", "headcount": 19 }
+  ],
+  "teams": [
+    {
+      "id": "platform",
+      "name": "플랫폼팀",
+      "orgUnitId": "product",
+      "leaderName": "김도현"
+    },
+    {
+      "id": "people",
+      "name": "피플팀",
+      "orgUnitId": "corporate",
+      "headcount": 5,
+      "leaderName": "박서연",
+      "composition": [
+        { "role": "팀장", "count": 1 },
+        { "role": "채용", "count": 2 },
+        { "role": "HR운영", "count": 1 },
+        { "role": "채용(플레이어)", "count": 1 }
+      ]
+    }
+  ],
+  "compensation": {
+    "salaryUnit": "KRW_10K",
+    "annualReviewMonth": 8,
+    "policy": [
+      "개발직군은 레벨제 D1~D6으로 운영한다.",
+      "계약연봉 = 기본연봉이며 퇴직금은 별도다.",
+      "성과급은 연 1회 별도 지급하며 계약연봉에 포함하지 않는다.",
+      "전사 연봉 조정은 매년 8월에 시행한다."
+    ],
+    "bands": [
+      { "level": "D3", "jobFamily": "개발", "min": 5000, "max": 6300, "note": "주니어" },
+      { "level": "D4", "jobFamily": "개발", "min": 6200, "max": 7800, "note": "시니어" },
+      { "level": "D5", "jobFamily": "개발", "min": 7600, "max": 9600, "note": "리드" },
+      { "level": "D6", "jobFamily": "개발", "min": 9400, "max": 12000, "note": "스태프" }
+    ],
+    "approvals": [
+      {
+        "id": "band-exceed",
+        "subject": "밴드 상단 초과 오퍼",
+        "chain": ["피플팀장", "CFO", "대표이사"],
+        "finalApprover": "대표이사",
+        "leadTimeBusinessDays": [2, 3],
+        "sameDayPossible": false,
+        "summary": "피플팀장 → CFO → 대표이사. 2~3영업일 소요, 당일 처리 불가."
+      },
+      {
+        "id": "signing-bonus",
+        "subject": "사이닝 보너스",
+        "chain": ["CFO"],
+        "finalApprover": "CFO",
+        "limitPerPerson": 3000,
+        "clawback": "2년 내 자진 퇴사 시 전액 반환",
+        "sameDayPossible": true,
+        "summary": "CFO 전결. 1인 3,000만원 한도, 2년 내 자진 퇴사 시 전액 반환. 당일 처리 가능."
+      },
+      {
+        "id": "stock-option",
+        "subject": "스톡옵션 부여",
+        "chain": ["이사회"],
+        "finalApprover": "이사회",
+        "cadence": "분기",
+        "nextDecisionAt": "2026-09",
+        "sameDayPossible": false,
+        "summary": "분기 이사회 승인 사항. 다음 이사회는 2026년 9월."
+      }
+    ],
+    "headcountPlan": [
+      {
+        "period": "2026 하반기",
+        "remaining": 7,
+        "closedLevels": ["D5", "D6"],
+        "note": "D5 이상 TO 없음. 프로덕트본부 배정이 이미 완료되었다."
+      }
+    ]
+  },
+  "employees": [
+    {
+      "id": "bae-junhyuk",
+      "name": "배준혁",
+      "teamId": "platform",
+      "jobFamily": "백엔드",
+      "level": "D5",
+      "levelLabel": "D5 (팀 리드)",
+      "joinedAt": "2020-11",
+      "salary": 9200,
+      "lastReviewGrade": "A",
+      "lastReviewYear": 2025
+    },
+    {
+      "id": "oh-sejin",
+      "name": "오세진",
+      "teamId": "platform",
+      "jobFamily": "백엔드",
+      "level": "D4",
+      "levelLabel": "D4",
+      "joinedAt": "2021-05",
+      "salary": 7450,
+      "lastReviewGrade": "A",
+      "lastReviewYear": 2025
+    },
+    {
+      "id": "moon-jiho",
+      "name": "문지호",
+      "teamId": "platform",
+      "jobFamily": "백엔드",
+      "level": "D4",
+      "levelLabel": "D4",
+      "joinedAt": "2022-09",
+      "salary": 7100,
+      "lastReviewGrade": "B+",
+      "lastReviewYear": 2025
+    },
+    {
+      "id": "kang-yerin",
+      "name": "강예린",
+      "teamId": "platform",
+      "jobFamily": "백엔드",
+      "level": "D4",
+      "levelLabel": "D4",
+      "joinedAt": "2023-02",
+      "salary": 6900,
+      "lastReviewGrade": "A",
+      "lastReviewYear": 2025
+    }
+  ]
+}
