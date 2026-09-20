@@ -35,7 +35,7 @@ function nextStop(scenes: Scene[], from: number): number {
   return scenes.length;
 }
 
-export function TrainShell({ course, coreUrl }: { course: Course; coreUrl: string }) {
+export function TrainShell({ course }: { course: Course }) {
   const first = course.missions.find((m) => m.ready)?.id ?? course.missions[0].id;
   const [p, setP] = useState<Progress>(() => emptyProgress(course.id, first));
   const [ready, setReady] = useState(false);
@@ -43,6 +43,9 @@ export function TrainShell({ course, coreUrl }: { course: Course; coreUrl: strin
   const [res, setRes] = useState<CheckResult | null>(null);
   const [busy, setBusy] = useState(false);
   const [openSteps, setOpenSteps] = useState(false);
+  const [note, setNote] = useState<string | null>(null);
+  const [gateBusy, setGateBusy] = useState(false);
+  const [link, setLink] = useState<string | null>(null);
 
   useEffect(() => {
     const saved = loadProgress(course.id);
@@ -119,6 +122,59 @@ export function TrainShell({ course, coreUrl }: { course: Course; coreUrl: strin
     put({ ...p, missions: { ...p.missions, [mission.id]: nextMp } });
   };
 
+  /**
+   * 연습 회사 문을 연다. 표(2분·일회용)는 서버에서 받아 오고 주소만 새 창에 넣는다.
+   * 창을 먼저 열어 두는 이유: 표를 받아 온 뒤에 열면 브라우저가 팝업으로 보고 막는다.
+   */
+  const openCore = async (next?: string) => {
+    const pre = window.open("", "_blank");        // 표를 받기 전에 먼저 열어 둔다
+    setNote(null);
+    setLink(null);
+    setGateBusy(true);
+    try {
+      const r = await fetch("/api/train/open", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ next }),
+      });
+      const j = (await r.json()) as { ok: boolean; url?: string; msg?: string };
+      if (!j.ok || !j.url) {
+        pre?.close();
+        setNote(j.msg ?? "연습 회사를 열지 못했습니다.");
+        return;
+      }
+      if (pre) {
+        pre.location.href = j.url;
+        return;
+      }
+      if (window.open(j.url, "_blank")) return;
+      // 새 창이 막힌 브라우저 — 표는 멀쩡하니 직접 누를 링크를 내준다(2분).
+      setLink(j.url);
+      setNote("브라우저가 새 창을 막았습니다. 아래 링크를 2분 안에 눌러 주세요.");
+    } catch {
+      pre?.close();
+      setNote("연습 회사를 열지 못했습니다.");
+    } finally {
+      setGateBusy(false);
+    }
+  };
+
+  /** 연습 회사 데이터를 처음 상태로. 실제 회사 데이터는 건드리지 않는다. */
+  const resetCompany = async () => {
+    if (!window.confirm("연습 회사에서 만든 요청서·포지션을 모두 지우고 처음 상태로 되돌립니다. 계속할까요?")) return;
+    setNote(null);
+    setGateBusy(true);
+    try {
+      const r = await fetch("/api/train/reset", { method: "POST" });
+      const j = (await r.json()) as { ok: boolean; msg: string };
+      setNote(j.msg);
+    } catch {
+      setNote("되돌리지 못했습니다.");
+    } finally {
+      setGateBusy(false);
+    }
+  };
+
   const check = async () => {
     if (cur?.k !== "do") return;
     setBusy(true);
@@ -191,6 +247,46 @@ export function TrainShell({ course, coreUrl }: { course: Course; coreUrl: strin
             );
           })}
         </nav>
+
+        <div className="mt-3 rounded border border-line bg-surface p-3">
+          <div className="text-[11px] font-bold text-muted">연습 회사</div>
+          <p className="mt-1 text-[11.5px] leading-relaxed text-ink-soft">
+            (주)새봄테크 — 여기서 한 일은 실제 회사 데이터에 영향을 주지 않습니다.
+          </p>
+          <button
+            type="button"
+            onClick={() => openCore("/dashboard")}
+            disabled={gateBusy}
+            className="mt-2 w-full rounded border border-line-strong px-3 py-2 text-[11.5px] font-bold text-ink hover:bg-sunken disabled:opacity-55"
+          >
+            연습 회사 열기
+          </button>
+          <button
+            type="button"
+            onClick={resetCompany}
+            disabled={gateBusy}
+            className="mt-1.5 w-full rounded border border-line px-3 py-2 text-[11.5px] font-bold text-ink-soft hover:bg-sunken disabled:opacity-55"
+          >
+            연습 데이터 처음으로
+          </button>
+          {note ? (
+            <p className="mt-2 text-[11px] leading-relaxed text-ink-soft">{note}</p>
+          ) : null}
+          {link ? (
+            <a
+              href={link}
+              target="_blank"
+              rel="noreferrer"
+              onClick={() => {
+                setLink(null);
+                setNote(null);
+              }}
+              className="mt-1.5 block rounded border border-line-strong px-3 py-2 text-center text-[11.5px] font-bold text-ink hover:bg-sunken"
+            >
+              연습 회사 열기 (새 창)
+            </a>
+          ) : null}
+        </div>
 
         <div className="mt-3 rounded border border-line bg-surface p-3">
           <div className="text-[11px] font-bold text-muted">도움 단계</div>
@@ -303,13 +399,28 @@ export function TrainShell({ course, coreUrl }: { course: Course; coreUrl: strin
         {cur?.k === "do" && !doneMission ? (
           <div className="shrink-0 border-t border-line p-3 md:p-4">
             {cur.open ? (
-              <a
-                href={coreUrl ? coreUrl + cur.open : cur.open}
-                target="_blank"
-                rel="noreferrer"
-                className="block rounded border border-line-strong px-3 py-2.5 text-center text-[12.5px] font-bold text-ink hover:bg-sunken"
+              <button
+                type="button"
+                onClick={() => openCore(cur.open)}
+                disabled={gateBusy}
+                className="block w-full rounded border border-line-strong px-3 py-2.5 text-center text-[12.5px] font-bold text-ink hover:bg-sunken disabled:opacity-55"
               >
                 {cur.openLabel ?? "화면 열기"}
+              </button>
+            ) : null}
+
+            {link ? (
+              <a
+                href={link}
+                target="_blank"
+                rel="noreferrer"
+                onClick={() => {
+                  setLink(null);
+                  setNote(null);
+                }}
+                className="mt-2 block rounded border border-line-strong px-3 py-2 text-center text-[12px] font-bold text-ink hover:bg-sunken"
+              >
+                새 창이 막혔습니다 — 여기를 눌러 여세요
               </a>
             ) : null}
 
