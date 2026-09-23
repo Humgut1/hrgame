@@ -62,6 +62,16 @@ export async function callHire(path: string, body: object): Promise<Response | n
 
 const who = (l?: Learner) => (l ? { learner: l.id, name: l.name } : {});
 
+/** 표 주소는 Grow 가 아는 연습 회사 주소(https)로 다시 붙인다 — TalentCore 가 프록시 뒤에서 http 로 적어 줄 때가 있다. */
+function onBase(u: string): string {
+  try {
+    const p = new URL(u);
+    return `${BASE}${p.pathname}${p.search}`;
+  } catch {
+    return u;
+  }
+}
+
 /** 연습 회사 입장 주소를 만든다(표 한 장). 연습 Hire 는 그 연습 계정으로 로그인해서 들어간다. */
 export async function openCompany(next?: string, learner?: Learner, app: "core" | "hire" = "core"): Promise<OpenResult> {
   if (app === "hire") {
@@ -72,14 +82,14 @@ export async function openCompany(next?: string, learner?: Learner, app: "core" 
     const j = (await r.json()) as { url?: string };
     const hireStart = `${HIRE}/api/auth/core/start?next=${encodeURIComponent(safeNext(next || "/"))}`;
     // 연습 회사에 로그인한 뒤 곧장 Hire 로그인 입구로 — Core 는 자기에게 연결된 Hire 주소만 허용한다.
-    return { ok: true, url: `${j.url}&next=${encodeURIComponent(hireStart)}` };
+    return { ok: true, url: `${onBase(j.url || "")}&next=${encodeURIComponent(hireStart)}` };
   }
   const r = await call("/api/training/ticket", who(learner));
   if (!r) return { ok: false, msg: "연습용 TalentCore에 연결하지 못했습니다. 서버가 켜져 있는지 확인해 주세요." };
   if (!r.ok) return { ok: false, msg: "연습 회사 입장표를 받지 못했습니다(권한 확인 필요)." };
   const j = (await r.json()) as { url?: string };
   if (!j.url) return { ok: false, msg: "연습 회사 입장표를 받지 못했습니다." };
-  return { ok: true, url: `${j.url}&next=${encodeURIComponent(safeNext(next))}` };
+  return { ok: true, url: `${onBase(j.url)}&next=${encodeURIComponent(safeNext(next))}` };
 }
 
 /** 처음 상태로 — 배우는 사람이 있으면 그 사람이 한 일만(TalentCore + 연습 Hire). */
