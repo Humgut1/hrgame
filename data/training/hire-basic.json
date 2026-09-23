@@ -1,5 +1,6 @@
 {
   "id": "hire-basic",
+  "profiles": ["TA_RC", "TA_REC"],
   "title": "채용 한 건, 끝까지",
   "subtitle": "TalentCore에서 자리를 열고 Hire로 넘겨 사람을 앉히기까지",
   "me": { "name": "나", "title": "인사팀 채용 담당" },

@@ -4,10 +4,13 @@
 
 import { NextResponse } from "next/server";
 
+import { needLogin } from "@/lib/auth/guard";
 import { runCheck } from "@/lib/train/check";
 import { ACTIVE_COURSE_ID, findCheck } from "@/lib/train/course";
 
 export async function POST(req: Request) {
+  const no = await needLogin();
+  if (no) return no;
   const body = (await req.json().catch(() => ({}))) as {
     courseId?: string;
     missionId?: string;

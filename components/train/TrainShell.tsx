@@ -9,7 +9,7 @@
  *  - 같은 미션을 도움 단계 셋으로 돌려 쓴다(따라 하기 / 힌트만 / 확인 시험).
  */
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import {
   clearProgress,
@@ -35,7 +35,26 @@ function nextStop(scenes: Scene[], from: number): number {
   return scenes.length;
 }
 
-export function TrainShell({ course }: { course: Course }) {
+/** 화면에 보여 줄 배우는 사람 — TalentCore 에서 읽은 값(열쇠·기록 원본은 서버에). */
+export interface ClientLearner {
+  id: string;
+  name: string;
+  dept: string;
+  position: string;
+  profile: { code: string; name: string; summary: string } | null;
+}
+
+export function TrainShell({
+  course,
+  learner = null,
+  saved,
+}: {
+  course: Course;
+  learner?: ClientLearner | null;
+  /** TalentCore 에 적혀 있던 진행·수료 */
+  saved?: { state?: Progress | null; completedAt?: string | null };
+}) {
+  const owner = learner?.id;
   const first = course.missions.find((m) => m.ready)?.id ?? course.missions[0].id;
   const [p, setP] = useState<Progress>(() => emptyProgress(course.id, first));
   const [ready, setReady] = useState(false);
@@ -46,16 +65,47 @@ export function TrainShell({ course }: { course: Course }) {
   const [note, setNote] = useState<string | null>(null);
   const [gateBusy, setGateBusy] = useState(false);
   const [link, setLink] = useState<string | null>(null);
+  const [sync, setSync] = useState<"idle" | "saving" | "saved" | "fail">("idle");
+  const [completedAt, setCompletedAt] = useState<string | null>(saved?.completedAt ?? null);
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    const saved = loadProgress(course.id);
-    if (saved) setP(saved);
+    // 이 브라우저 것과 TalentCore 것 중 나중에 바꾼 쪽에서 이어 간다.
+    const local = loadProgress(course.id, owner);
+    const remote = saved?.state && saved.state.courseId === course.id ? saved.state : undefined;
+    const pickP =
+      local && remote ? ((local.savedAt ?? 0) >= (remote.savedAt ?? 0) ? local : remote) : local ?? remote;
+    if (pickP) setP(pickP);
     setReady(true);
-  }, [course.id]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [course.id, owner]);
+
+  /** TalentCore 에 적기 — 연달아 바뀌면 마지막 것만 보낸다. */
+  const push = (next: Progress) => {
+    if (!learner) return;
+    if (timer.current) clearTimeout(timer.current);
+    setSync("saving");
+    timer.current = setTimeout(async () => {
+      try {
+        const r = await fetch("/api/train/progress", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ courseId: course.id, profile: learner.profile?.code ?? null, state: next }),
+        });
+        const j = (await r.json()) as { ok: boolean; completed_at?: string | null };
+        setSync(j.ok ? "saved" : "fail");
+        if (j.ok && j.completed_at) setCompletedAt(j.completed_at);
+      } catch {
+        setSync("fail");
+      }
+    }, 700);
+  };
 
   const put = (next: Progress) => {
-    setP(next);
-    saveProgress(next);
+    const stamped = { ...next, savedAt: Date.now() };
+    setP(stamped);
+    saveProgress(stamped, owner);
+    push(stamped);
   };
 
   const mission: Mission = course.missions.find((m) => m.id === p.cur) ?? course.missions[0];
@@ -205,6 +255,44 @@ export function TrainShell({ course }: { course: Course }) {
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-5xl flex-col gap-4 p-4 md:flex-row md:gap-6 md:p-6">
       <aside className="shrink-0 md:w-64">
+        {learner ? (
+          <div className="mb-3 rounded border border-line bg-surface p-3">
+            <div className="flex items-start gap-2">
+              <div className="min-w-0 flex-1">
+                <div className="truncate text-[13px] font-bold text-ink">{learner.name}</div>
+                <div className="truncate text-[11px] text-muted">
+                  {[learner.dept, learner.position].filter(Boolean).join(" · ")}
+                </div>
+              </div>
+              <form action="/api/auth/logout" method="post">
+                <button type="submit" className="shrink-0 text-[11px] font-bold text-muted hover:underline">
+                  로그아웃
+                </button>
+              </form>
+            </div>
+            {learner.profile ? (
+              <div className="mt-2 text-[11.5px] text-ink-soft">
+                세부 직무 <b className="text-ink">{learner.profile.name}</b>
+              </div>
+            ) : null}
+            <div className="mt-1.5 flex flex-wrap items-center gap-1.5 text-[10.5px] font-bold">
+              {completedAt ? (
+                <span className="rounded-full bg-success-soft px-2 py-0.5 text-success-text">
+                  수료 {completedAt.slice(0, 10).replaceAll("-", ".")}
+                </span>
+              ) : null}
+              <span className={sync === "fail" ? "text-warning-text" : "text-muted"}>
+                {sync === "saving"
+                  ? "TalentCore 에 저장 중"
+                  : sync === "saved"
+                    ? "TalentCore 에 저장됨"
+                    : sync === "fail"
+                      ? "TalentCore 저장 못 함 — 이 브라우저에는 남음"
+                      : "기록은 TalentCore 프로필에 남습니다"}
+              </span>
+            </div>
+          </div>
+        ) : null}
         <div className="rounded border border-line bg-surface p-4">
           <div className="text-[11px] font-bold text-muted">교육</div>
           <h1 className="mt-1 text-[15px] font-bold text-ink">{course.title}</h1>
@@ -315,8 +403,8 @@ export function TrainShell({ course }: { course: Course }) {
         <button
           type="button"
           onClick={() => {
-            clearProgress(course.id);
-            setP(emptyProgress(course.id, first));
+            clearProgress(course.id, owner);
+            put(emptyProgress(course.id, first));
             setWhy(null);
             setRes(null);
           }}

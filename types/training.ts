@@ -77,6 +77,8 @@ export interface Course {
   title: string;
   subtitle: string;
   /** 배우는 사람이 맡는 역할 */
+  /** 이 과정을 받는 세부 직무(TalentCore job_profiles.code). 없으면 누구에게나 열린다. */
+  profiles?: string[];
   me: { name: string; title: string };
   cast: Cast[];
   missions: Mission[];
