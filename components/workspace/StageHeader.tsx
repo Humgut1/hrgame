@@ -13,7 +13,7 @@ export function StageHeader({ companyName }: { companyName: string }) {
   return (
     <>
       <header className="flex shrink-0 flex-wrap items-center gap-3 bg-shell-bg px-3.5 py-2 text-white">
-        <Link href="/" className="flex min-w-0 shrink-0 items-center gap-2.5">
+        <Link href="/sim" className="flex min-w-0 shrink-0 items-center gap-2.5">
           <span
             aria-hidden
             className="flex h-[23px] w-[23px] shrink-0 items-center justify-center rounded-[7px] bg-accent text-xs font-extrabold"
