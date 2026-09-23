@@ -9,7 +9,7 @@ import type { Check, Course, Mission } from "@/types/training";
 
 const DIR = path.join(process.cwd(), "data", "training");
 
-export const ACTIVE_COURSE_ID = "hire-basic";
+export const ACTIVE_COURSE_ID = "hire-rc";
 
 export function loadCourse(courseId: string = ACTIVE_COURSE_ID): Course {
   if (!/^[a-z0-9-]{1,60}$/.test(courseId)) throw new Error("bad course id");

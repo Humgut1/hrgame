@@ -4,7 +4,7 @@
 
 import { NextResponse } from "next/server";
 
-import { needLogin } from "@/lib/auth/guard";
+import { currentSession, needLogin } from "@/lib/auth/guard";
 import { runCheck } from "@/lib/train/check";
 import { ACTIVE_COURSE_ID, findCheck } from "@/lib/train/course";
 
@@ -27,5 +27,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ state: "offline", msg: "확인할 항목을 찾지 못했습니다." });
   }
 
-  return NextResponse.json(await runCheck(check, body.since));
+  const s = await currentSession();
+  return NextResponse.json(await runCheck(check, body.since, s?.u));
 }

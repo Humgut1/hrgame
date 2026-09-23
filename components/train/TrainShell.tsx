@@ -176,7 +176,7 @@ export function TrainShell({
    * 연습 회사 문을 연다. 표(2분·일회용)는 서버에서 받아 오고 주소만 새 창에 넣는다.
    * 창을 먼저 열어 두는 이유: 표를 받아 온 뒤에 열면 브라우저가 팝업으로 보고 막는다.
    */
-  const openCore = async (next?: string) => {
+  const openCore = async (next?: string, app?: "core" | "hire", seed?: string) => {
     const pre = window.open("", "_blank");        // 표를 받기 전에 먼저 열어 둔다
     setNote(null);
     setLink(null);
@@ -185,7 +185,7 @@ export function TrainShell({
       const r = await fetch("/api/train/open", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ next }),
+        body: JSON.stringify({ next, app, seed }),
       });
       const j = (await r.json()) as { ok: boolean; url?: string; msg?: string };
       if (!j.ok || !j.url) {
@@ -211,7 +211,7 @@ export function TrainShell({
 
   /** 연습 회사 데이터를 처음 상태로. 실제 회사 데이터는 건드리지 않는다. */
   const resetCompany = async () => {
-    if (!window.confirm("연습 회사에서 만든 요청서·포지션을 모두 지우고 처음 상태로 되돌립니다. 계속할까요?")) return;
+    if (!window.confirm("내가 연습 회사에서 만든 요청서·포지션·Hire 공고를 지우고 처음 상태로 되돌립니다. 다른 사람의 연습은 그대로입니다. 계속할까요?")) return;
     setNote(null);
     setGateBusy(true);
     try {
@@ -489,7 +489,7 @@ export function TrainShell({
             {cur.open ? (
               <button
                 type="button"
-                onClick={() => openCore(cur.open)}
+                onClick={() => openCore(cur.open, cur.app, cur.seed)}
                 disabled={gateBusy}
                 className="block w-full rounded border border-line-strong px-3 py-2.5 text-center text-[12.5px] font-bold text-ink hover:bg-sunken disabled:opacity-55"
               >

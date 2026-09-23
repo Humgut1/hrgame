@@ -19,7 +19,7 @@ export interface Answer {
 
 /** 데이터 확인 — 진짜 화면에서 한 일을 TalentCore 기록으로 본다. */
 export interface Check {
-  kind: "requisition" | "openings";
+  kind: "requisition" | "openings" | "hire";
   /** 이번 판에서 만든 것만 보도록 미션 시작 시각 이후로 좁힌다. */
   find: { titleHas?: string; deptIs?: string };
   /** 위에서부터 본다. 처음 어긋난 항목이 '틀림'이 된다. */
@@ -51,6 +51,10 @@ export type Scene =
       /** 진짜 화면 주소 (TalentCore·Hire) */
       open?: string;
       openLabel?: string;
+      /** 어느 화면인가 — 기본 TalentCore. hire 면 연습 Hire({pos} = 내 공고 id) */
+      app?: "core" | "hire";
+      /** 이 장면을 열 때 연습 Hire 에 일어나는 이야기 속 사건 */
+      seed?: "applicants" | "finalist";
       steps: string[];
       hint: string;
       check: Check;

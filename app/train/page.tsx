@@ -5,7 +5,7 @@ import { currentSession, loginOn } from "@/lib/auth/guard";
 import { ACTIVE_COURSE_ID, courseFor, loadCourse, toClientCourse } from "@/lib/train/course";
 import type { Progress } from "@/lib/train/progress";
 
-export const metadata = { title: "교육 — 채용 한 건, 끝까지" };
+export const metadata = { title: "직무 교육 — Grow" };
 export const dynamic = "force-dynamic";
 
 export default async function TrainPage({
