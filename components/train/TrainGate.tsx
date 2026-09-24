@@ -3,6 +3,8 @@
  * 서버에서 그린다(열쇠·주소를 브라우저로 보내지 않는다).
  */
 
+import { BrandLockup } from "@/components/BrandMark";
+
 const WHY: Record<string, string> = {
   again: "로그인 요청이 만료됐습니다. 다시 눌러 주세요.",
   fail: "TalentCore 가 로그인을 확인해 주지 않았습니다. 다시 눌러 주세요.",
@@ -14,8 +16,11 @@ function Frame({ children }: { children: React.ReactNode }) {
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-md flex-col justify-center p-4">
       <div className="rounded border border-line bg-surface p-5">
-        <div className="text-[11px] font-bold text-muted">Grow · 직무 교육</div>
-        {children}
+        <div className="flex items-center justify-between gap-2">
+          <BrandLockup size={22} />
+          <span className="text-[11px] font-bold text-muted">Grow · 직무 교육</span>
+        </div>
+        <div className="mt-3">{children}</div>
       </div>
     </div>
   );

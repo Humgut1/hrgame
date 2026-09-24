@@ -20,6 +20,7 @@ import {
 } from "@/lib/train/progress";
 import type { CheckResult, Course, HelpLevel, Mission, Scene } from "@/types/training";
 import { josa } from "@/lib/train/josa";
+import { BrandLockup } from "@/components/BrandMark";
 
 const HELP: { id: HelpLevel; label: string; hint: string }[] = [
   { id: "follow", label: "따라 하기", hint: "순서를 그대로 보여 줍니다" },
@@ -255,6 +256,10 @@ export function TrainShell({
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-5xl flex-col gap-4 p-4 md:flex-row md:gap-6 md:p-6">
       <aside className="shrink-0 md:w-64">
+        <div className="mb-3 flex items-center justify-between gap-2 px-1">
+          <BrandLockup size={22} />
+          <span className="text-[11px] font-bold text-muted">Grow</span>
+        </div>
         {learner ? (
           <div className="mb-3 rounded border border-line bg-surface p-3">
             <div className="flex items-start gap-2">

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { JetBrains_Mono } from "next/font/google";
+import { JetBrains_Mono, Unbounded } from "next/font/google";
 
 import "./globals.css";
 
@@ -10,14 +10,17 @@ const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
 });
 
+// 로고 글자(talentcore) 전용. components/BrandMark.tsx 가 --font-unbounded 를 쓴다.
+const unbounded = Unbounded({ subsets: ["latin"], weight: ["700"], variable: "--font-unbounded" });
+
 export const metadata: Metadata = {
-  title: "HR 실무 시뮬레이터",
-  description: "실제 회사에서 일하는 것처럼 HR 의사결정을 연습한다.",
+  title: "Grow",
+  description: "TalentCore 계정으로 듣는 사내 직무 교육",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ko" className={jetbrainsMono.variable}>
+    <html lang="ko" className={`${jetbrainsMono.variable} ${unbounded.variable}`}>
       <head>
         <link
           rel="stylesheet"
