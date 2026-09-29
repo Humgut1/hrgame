@@ -40,7 +40,7 @@
   --font-sans:
     "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "Segoe UI",
     "Apple SD Gothic Neo", "Malgun Gothic", "맑은 고딕", Roboto, sans-serif;
-  --font-mono: var(--font-jetbrains-mono), "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  --font-mono: var(--font-jetbrains-mono), "SFMono-Regular", Consolas, "Pretendard Variable", monospace; /* 한글은 Pretendard 로 — 없으면 굴림체 */
 }
 
 html,
